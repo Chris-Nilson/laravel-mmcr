@@ -1,0 +1,12 @@
+
+<?php
+
+    require_once("Generator.php");
+    require_once("Database.php");
+
+    use App\Generator\MySLQGenerator;
+
+    $generator = new MySLQGenerator();
+    $generator->generate_code();
+
+?>
