@@ -20,40 +20,40 @@ function controllers_generator($table_name, $table_and_fields = []) {
     $update_code = '';
     $validation_code = '';
     $validation_point = [];
-    $relationship = '[';
-    foreach ($table_and_fields[$table_name] as $field) {
-        if (in_array(strtolower($field), ['created_at', 'updated_at', 'id'])) {
-            continue;
-        }
-
-        $store_code .= "\n\t\t\t'$field' => \$request->$field,";
-        $update_code .= "\n\t\t\t$$generic_variable_name->$field = \$request->$field;";
-        // 'email' => ['required', 'string', 'email', 'max:255', 'min:8', 'unique:users'],
-        $validation_code .= "\n\t\t\t'$field' => ['required'],";
-        $validation_point[] = "\$request->$field";
-
-        $has_relation = preg_match('/_id/', $field);
-        if ($has_relation) {
-            $function_name = str_replace('_id', '', $field);
-            $relationship .= "'".$function_name."', ";
-        }
-    }
-
-    // reverse
-    $relation_table_name = str_split($table_name);
-    if(strtolower($relation_table_name[count($relation_table_name)-1]) == 's') {
-        $relation_table_name[count($relation_table_name)-1] = '';
-    }
-    $relation_table_name = implode('',$relation_table_name).'_id';
-
-    foreach ($table_and_fields as $table => $fields) {
-
-        if(in_array($relation_table_name, $fields)) {
-            $function_name = $table;
-            $relationship .= "'".$function_name."', ";
-        }
-    }
-    $relationship .= ']';
+    // $relationship = '[';
+    // foreach ($table_and_fields[$table_name] as $field) {
+    //     if (in_array(strtolower($field), ['created_at', 'updated_at', 'id'])) {
+    //         continue;
+    //     }
+    //
+    //     $store_code .= "\n\t\t\t'$field' => \$request->$field,";
+    //     $update_code .= "\n\t\t\t$$generic_variable_name->$field = \$request->$field;";
+    //     // 'email' => ['required', 'string', 'email', 'max:255', 'min:8', 'unique:users'],
+    //     $validation_code .= "\n\t\t\t'$field' => ['required'],";
+    //     $validation_point[] = "\$request->$field";
+    //
+    //     $has_relation = preg_match('/_id/', $field);
+    //     if ($has_relation) {
+    //         $function_name = str_replace('_id', '', $field);
+    //         $relationship .= "'".$function_name."', ";
+    //     }
+    // }
+    //
+    // // reverse
+    // $relation_table_name = str_split($table_name);
+    // if(strtolower($relation_table_name[count($relation_table_name)-1]) == 's') {
+    //     $relation_table_name[count($relation_table_name)-1] = '';
+    // }
+    // $relation_table_name = implode('',$relation_table_name).'_id';
+    //
+    // foreach ($table_and_fields as $table => $fields) {
+    //
+    //     if(in_array($relation_table_name, $fields)) {
+    //         $function_name = $table;
+    //         $relationship .= "'".$function_name."', ";
+    //     }
+    // }
+    // $relationship .= ']';
 
     // default controller
     $mainController = "./laravel_project/app/Http/Controllers/Controller.php";
@@ -98,7 +98,7 @@ class {$class_name}Controller extends Controller
      */
     public function index()
     {
-        return {$model_class_name}::with({$relationship})->get();
+        return {$model_class_name}::all();
     }
 
     /**
@@ -149,7 +149,7 @@ class {$class_name}Controller extends Controller
      */
     public function show(\$id)
     {
-        if(\${$generic_variable_name} = {$model_class_name}::with({$relationship})->where('id', \$id)->get()->first()):
+        if(\${$generic_variable_name} = {$model_class_name}::find(\$id)):
             return \${$generic_variable_name};
         else:
                 return [

@@ -17,6 +17,8 @@ function models_generator($table_name, $table_and_fields = []) {
     // when key is migrated
     $relationship_code = '';
 
+    $embeded_with = '';
+
     foreach ($table_and_fields[$table_name] as $field) {
         $has_relation = preg_match('/_id$/', $field);
         if($has_relation) {
@@ -25,7 +27,7 @@ function models_generator($table_name, $table_and_fields = []) {
 
             // check end character to detect 'a'
             $endChar = $target_class_name[count($target_class_name)-1];
-            
+
             $target_class_name[0] = strtoupper($target_class_name[0]);
             $target_class_name = implode('', $target_class_name);
             $target_class_name = str_replace('_', ' ', $target_class_name);
@@ -33,8 +35,11 @@ function models_generator($table_name, $table_and_fields = []) {
             $target_class_name = str_replace(' ', '', $target_class_name);
             $todo = '';
 
-            
-            if( !in_array($function_name.'s', array_keys($table_and_fields)) AND 
+            // $with = [...]
+            $embeded_with .= "$function_name, ";
+
+
+            if( !in_array($function_name.'s', array_keys($table_and_fields)) AND
                 !in_array($endChar, ['a']) ) {
                 $todo .= "// TODO change App\\$target_class_name class to another existing class\n\t\t";
                 $todo .= "// TODO create the inverse relationship method in the correct model class\n\t\t";
@@ -46,9 +51,9 @@ function models_generator($table_name, $table_and_fields = []) {
             // return \$this->hasMany('App\\{$class_name}', '$field');
         }
         */";
-            }
+    }
 
-            $relationship_code .= "
+                $relationship_code .= "
     public function $function_name() {
         $todo
         return \$this->belongsTo('App\\{$target_class_name}', '$field');
@@ -115,6 +120,9 @@ use Illuminate\Database\Eloquent\Model;
 class $class_name extends Model
 {
     protected \$guarded = ['id'];
+
+    protected \$with = [$embeded_with];
+
     $relationship_code
 }
 EOT;
