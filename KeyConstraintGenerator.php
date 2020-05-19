@@ -1,5 +1,7 @@
 <?php
 
+use function App\plurial_noun;
+
 class KeyConstraintGenerator {
     private $tables_and_fields;
     private $foreign_key_constraint_code;
@@ -39,16 +41,18 @@ public function addfor($table_name) {
         $has_relation = preg_match('/_id$/', $field);
         if($has_relation) {
             $target_table_name = str_replace('_id', '', $field);
-            $target_table_if_has_a = $target_table_name;
-            $endChar = str_split($target_table_name);
-            $endChar = $endChar[count($endChar)-1];
+            $target_table_name = plurial_noun($target_table_name);
+            // $target_table_if_has_a = $target_table_name;
+            // $endChar = str_split($target_table_name);
+            // $endChar = $endChar[count($endChar)-1];
 
-            $target_table_name = $target_table_name.'s';
-            if(in_array($target_table_name, array_keys($this->tables_and_fields)) OR
-                in_array($endChar, ['a']) ) {
-                    if (in_array($endChar, ['a'])) {
-                        $target_table_name = $target_table_if_has_a;
-                    }
+            // $target_table_name = $target_table_name.'s';
+            // if(in_array($target_table_name, array_keys($this->tables_and_fields)) OR
+            //     in_array($endChar, ['a']) ) {
+            //         if (in_array($endChar, ['a'])) {
+            //             $target_table_name = $target_table_if_has_a;
+            //         }
+            if(in_array($target_table_name, array_keys($this->tables_and_fields))) {
                 $constraint_code .= "
 
         \$table->foreign('$field')

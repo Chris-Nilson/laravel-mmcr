@@ -8,11 +8,13 @@ function models_generator($table_name, $table_and_fields = []) {
     $class_name = ucwords($class_name);
     $class_name = str_replace(' ', '', $class_name);
 
-    $class_name = str_split($class_name);
-    if(strtolower($class_name[count($class_name)-1]) == 's') {
-        $class_name[count($class_name)-1] = '';
-    }
-    $class_name = implode('',$class_name);
+    // $class_name = str_split($class_name);
+    // if(strtolower($class_name[count($class_name)-1]) == 's') {
+    //     $class_name[count($class_name)-1] = '';
+    // }
+    // $class_name = implode('',$class_name);
+
+    $class_name = singular_noun($class_name);
 
     // when key is migrated
     $relationship_code = '';

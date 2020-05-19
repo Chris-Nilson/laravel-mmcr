@@ -8,6 +8,8 @@ require_once("models_generator.php");
 require_once("routes_generator.php");
 require_once("detailed_routes_generator.php");
 require_once("KeyConstraintGenerator.php");
+require_once("singular_noun.php");
+require_once("plurial_noun.php");
 use App\MySQLDatabase;
 use KeyConstraintGenerator;
 use ZipArchive;
@@ -16,6 +18,8 @@ use function App\controllers_generator;
 use function App\db_query;
 use function App\migrations_genrator;
 use function App\models_generator;
+use function App\plurial_noun;
+use function App\singular_noun;
 
 interface Generator {
     public function generate_code();
@@ -231,11 +235,12 @@ class MySLQGenerator implements Generator
             $class_name = ucwords($class_name);
             $class_name = str_replace(' ', '', $class_name);
 
-            $model_class_name = str_split($class_name);
-            if (strtolower($model_class_name[count($model_class_name)-1]) == 's') {
-                $model_class_name[count($model_class_name)-1] = '';
-            }
-            $model_class_name = implode('', $model_class_name);
+            // $model_class_name = str_split($class_name);
+            // if (strtolower($model_class_name[count($model_class_name)-1]) == 's') {
+            //     $model_class_name[count($model_class_name)-1] = '';
+            // }
+            // $model_class_name = implode('', $model_class_name);
+            $model_class_name = singular_noun($class_name);
 
             $model_file_name = $model_class_name.'.php';
             $file_path = $app_dir.'/'.$model_file_name;

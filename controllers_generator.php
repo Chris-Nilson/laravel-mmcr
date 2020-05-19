@@ -7,11 +7,13 @@ function controllers_generator($table_name, $table_and_fields = []) {
     $class_name = ucwords($class_name);
     $class_name = str_replace(' ', '', $class_name);
 
-    $model_class_name = str_split($class_name);
-    if(strtolower($model_class_name[count($model_class_name)-1]) == 's') {
-        $model_class_name[count($model_class_name)-1] = '';
-    }
-    $model_class_name = implode('',$model_class_name);
+    // $model_class_name = str_split($class_name);
+    // if(strtolower($model_class_name[count($model_class_name)-1]) == 's') {
+    //     $model_class_name[count($model_class_name)-1] = '';
+    // }
+    // $model_class_name = implode('',$model_class_name);
+
+    $model_class_name = singular_noun($class_name);
 
     $generic_variable_name = $model_class_name;
     $generic_variable_name[0] = strtolower($model_class_name);
@@ -20,6 +22,17 @@ function controllers_generator($table_name, $table_and_fields = []) {
     $update_code = '';
     $validation_code = '';
     $validation_point = [];
+
+    foreach ($table_and_fields[$table_name] as $field) {
+        if (in_array(strtolower($field), ['created_at', 'updated_at', 'deleted_at', 'id'])) {
+            continue;
+        }
+
+        $store_code .= "\n\t\t\t'$field' => \$request->$field,";
+        $update_code .= "\n\t\t\t$$generic_variable_name->$field = \$request->$field;";
+        // 'email' => ['required', 'string', 'email', 'max:255', 'min:8', 'unique:users'],
+        $validation_code .= "\n\t\t\t'$field' => ['required'],";
+    }
 
     // default controller
     $mainController = "./laravel_project/app/Http/Controllers/Controller.php";
@@ -64,7 +77,7 @@ class {$class_name}Controller extends Controller
      */
     public function index()
     {
-        return {$model_class_name}::all();
+        return {$model_class_name}::whereNotNull('deleted_at')->get();
     }
 
     /**
@@ -115,7 +128,9 @@ class {$class_name}Controller extends Controller
      */
     public function show(\$id)
     {
-        if(\${$generic_variable_name} = {$model_class_name}::find(\$id)):
+        if(\${$generic_variable_name} = {$model_class_name}
+            ::whereNotNull('deleted_at')
+            ->where('id', \$id)->first()):
             return \${$generic_variable_name};
         else:
                 return [
@@ -186,6 +201,50 @@ class {$class_name}Controller extends Controller
             return [
                 "success" => false,
                 "message" => "data not destoyed"
+            ];
+        endif;
+    }
+
+    /**
+     * Soft delete the specified resource from storage.
+     *
+     * @param  int  \$id
+     * @return \Illuminate\Http\Response
+     */
+    public function desactivate(\$id)
+    {
+        if(\${$generic_variable_name} = $model_class_name::find(\$id)):
+
+            \${$generic_variable_name}->deleted_at = "'".date('Y-m-d h:i:s')."'";
+            \${$generic_variable_name}->save();
+
+            return  \${$generic_variable_name};
+        else:
+            return [
+                "success" => false,
+                "message" => "data not updated"
+            ];
+        endif;
+    }
+
+    /**
+     * Soft delete the specified resource from storage.
+     *
+     * @param  int  \$id
+     * @return \Illuminate\Http\Response
+     */
+    public function activate(\$id)
+    {
+        if(\${$generic_variable_name} = $model_class_name::find(\$id)):
+
+            \${$generic_variable_name}->deleted_at = null;
+            \${$generic_variable_name}->save();
+
+            return  \${$generic_variable_name};
+        else:
+            return [
+                "success" => false,
+                "message" => "data not updated"
             ];
         endif;
     }
