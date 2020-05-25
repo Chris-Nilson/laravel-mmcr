@@ -1,4 +1,7 @@
 <?php
+
+use function App\singular_noun;
+
 function detailed_routes_generator($tables_and_fields) {
 
     if(empty($tables_and_fields)) {
@@ -33,11 +36,13 @@ function detailed_routes_generator($tables_and_fields) {
         $class_name = str_replace(' ', '', $class_name);
         $class_name = $class_name.'Controller';
 
-        $singular_name = str_split($table_name);
-        if(strtolower($singular_name[count($singular_name)-1]) == 's') {
-            $singular_name[count($singular_name)-1] = '';
-        }
-        $singular_name = implode('',$singular_name);
+        // $singular_name = str_split($table_name);
+        // if(strtolower($singular_name[count($singular_name)-1]) == 's') {
+        //     $singular_name[count($singular_name)-1] = '';
+        // }
+        // $singular_name = implode('',$singular_name);
+
+        $singular_name = singular_noun($table_name);
 
         $routes .= "Route::get('$table_name/{{$singular_name}}', '$class_name@show');\n";
     }
@@ -63,13 +68,55 @@ function detailed_routes_generator($tables_and_fields) {
         $class_name = str_replace(' ', '', $class_name);
         $class_name = $class_name.'Controller';
 
-        $singular_name = str_split($table_name);
-        if(strtolower($singular_name[count($singular_name)-1]) == 's') {
-            $singular_name[count($singular_name)-1] = '';
-        }
-        $singular_name = implode('',$singular_name);
+        // $singular_name = str_split($table_name);
+        // if(strtolower($singular_name[count($singular_name)-1]) == 's') {
+        //     $singular_name[count($singular_name)-1] = '';
+        // }
+        // $singular_name = implode('',$singular_name);
+
+        $singular_name = singular_noun($table_name);
 
         $routes .= "Route::post('$table_name/update/{{$singular_name}}', '$class_name@update');\n";
+    }
+    $routes .= "\n\n";
+
+    // activate
+    $routes .= "// activation routes\n";
+    foreach ($tables_and_fields as $table_name => $value) {
+        $class_name = str_replace('_', ' ', $table_name);
+        $class_name = ucwords($class_name);
+        $class_name = str_replace(' ', '', $class_name);
+        $class_name = $class_name.'Controller';
+
+        // $singular_name = str_split($table_name);
+        // if(strtolower($singular_name[count($singular_name)-1]) == 's') {
+        //     $singular_name[count($singular_name)-1] = '';
+        // }
+        // $singular_name = implode('',$singular_name);
+
+        $singular_name = singular_noun($table_name);
+
+        $routes .= "Route::post('$table_name/activate/{{$singular_name}}', '$class_name@activate');\n";
+    }
+    $routes .= "\n\n";
+    
+    // soft delete
+    $routes .= "// soft delete routes\n";
+    foreach ($tables_and_fields as $table_name => $value) {
+        $class_name = str_replace('_', ' ', $table_name);
+        $class_name = ucwords($class_name);
+        $class_name = str_replace(' ', '', $class_name);
+        $class_name = $class_name.'Controller';
+
+        // $singular_name = str_split($table_name);
+        // if(strtolower($singular_name[count($singular_name)-1]) == 's') {
+        //     $singular_name[count($singular_name)-1] = '';
+        // }
+        // $singular_name = implode('',$singular_name);
+
+        $singular_name = singular_noun($table_name);
+
+        $routes .= "Route::post('$table_name/desactivate/{{$singular_name}}', '$class_name@desactivate');\n";
     }
     $routes .= "\n\n";
 
@@ -81,11 +128,13 @@ function detailed_routes_generator($tables_and_fields) {
         $class_name = str_replace(' ', '', $class_name);
         $class_name = $class_name.'Controller';
 
-        $singular_name = str_split($table_name);
-        if(strtolower($singular_name[count($singular_name)-1]) == 's') {
-            $singular_name[count($singular_name)-1] = '';
-        }
-        $singular_name = implode('',$singular_name);
+        // $singular_name = str_split($table_name);
+        // if(strtolower($singular_name[count($singular_name)-1]) == 's') {
+        //     $singular_name[count($singular_name)-1] = '';
+        // }
+        // $singular_name = implode('',$singular_name);
+
+        $singular_name = singular_noun($table_name);
 
         $routes .= "Route::post('$table_name/destroy/{{$singular_name}}', '$class_name@destroy');\n";
     }

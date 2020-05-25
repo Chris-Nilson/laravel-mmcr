@@ -38,7 +38,7 @@ function models_generator($table_name, $table_and_fields = []) {
             $todo = '';
 
             // $with = [...]
-            $embeded_with .= "$function_name, ";
+            // $embeded_with .= "'$function_name', ";
 
 
             if( !in_array($function_name.'s', array_keys($table_and_fields)) AND
@@ -67,11 +67,13 @@ function models_generator($table_name, $table_and_fields = []) {
     }
 
     // reverse
-    $relation_table_name = str_split($table_name);
-    if(strtolower($relation_table_name[count($relation_table_name)-1]) == 's') {
-        $relation_table_name[count($relation_table_name)-1] = '';
-    }
-    $relation_table_name = implode('',$relation_table_name).'_id';
+    // $relation_table_name = str_split($table_name);
+    // if(strtolower($relation_table_name[count($relation_table_name)-1]) == 's') {
+    //     $relation_table_name[count($relation_table_name)-1] = '';
+    // }
+
+    $relation_table_name = singular_noun($table_name).'_id';
+    // $relation_table_name = implode('',$relation_table_name).'_id';
     foreach ($table_and_fields as $table => $fields) {
         if(in_array($relation_table_name, $fields)) {
             $function_name = $table;
@@ -123,7 +125,7 @@ class $class_name extends Model
 {
     protected \$guarded = ['id'];
 
-    protected \$with = [$embeded_with];
+    protected \$with = [];
 
     $relationship_code
 }

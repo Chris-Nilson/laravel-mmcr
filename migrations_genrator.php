@@ -25,7 +25,7 @@ class Create{$class_name}Table extends Migration
         Schema::create('{$table_name}', function (Blueprint \$table) {
             {$generated_code} 
             \$table->timestamps();
-            \$table->dateTime('deleted_at');
+            \$table->dateTime('deleted_at')->nullable();
 
         });
     }

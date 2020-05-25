@@ -22,6 +22,7 @@ function controllers_generator($table_name, $table_and_fields = []) {
     $update_code = '';
     $validation_code = '';
     $validation_point = [];
+    $embeded_with = '';
 
     foreach ($table_and_fields[$table_name] as $field) {
         if (in_array(strtolower($field), ['created_at', 'updated_at', 'deleted_at', 'id'])) {
@@ -32,6 +33,23 @@ function controllers_generator($table_name, $table_and_fields = []) {
         $update_code .= "\n\t\t\t$$generic_variable_name->$field = \$request->$field;";
         // 'email' => ['required', 'string', 'email', 'max:255', 'min:8', 'unique:users'],
         $validation_code .= "\n\t\t\t'$field' => ['required'],";
+
+        $has_relation = preg_match('/_id/', $field);
+        if ($has_relation) {
+            $function_name = str_replace('_id', '', $field);
+            $embeded_with .= "'".$function_name."', ";
+        }
+    }
+
+        // reverse
+    $relation_table_name = singular_noun($table_name).'_id';
+    
+    foreach ($table_and_fields as $table => $fields) {
+    
+        if(in_array($relation_table_name, $fields)) {
+            $function_name = $table;
+            $embeded_with .= "'".$function_name."', ";
+        }
     }
 
     // default controller
@@ -57,6 +75,7 @@ EOT
     fclose($file);
     }
 
+/////////////////////////////////////////////////////////////////////
     // generated controller
     return <<<EOT
 <?php
@@ -77,7 +96,9 @@ class {$class_name}Controller extends Controller
      */
     public function index()
     {
-        return {$model_class_name}::whereNotNull('deleted_at')->get();
+        return {$model_class_name}::whereNull('deleted_at')
+        ->with([{$embeded_with}])
+        ->get();
     }
 
     /**
@@ -129,7 +150,8 @@ class {$class_name}Controller extends Controller
     public function show(\$id)
     {
         if(\${$generic_variable_name} = {$model_class_name}
-            ::whereNotNull('deleted_at')
+            ::whereNull('deleted_at')
+            ->->with([{$embeded_with}])
             ->where('id', \$id)->first()):
             return \${$generic_variable_name};
         else:
