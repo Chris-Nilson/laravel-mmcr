@@ -5,4 +5,4 @@ It includes:
 - Controllers with validators
 - Models
 
-> Just set database configuration in `config.php` and run as `php generate`
+> Just set database configuration in `config.php` and run `php generate`
